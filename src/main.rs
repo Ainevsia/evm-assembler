@@ -231,9 +231,32 @@ impl Instruction {
         }
 
         // filter empty lines
-        raw_contents = raw_contents.into_iter().filter(|x| x.len() > 0).collect();
+        raw_contents = raw_contents
+            .into_iter()
+            .filter(|x| x.len() > 0)
+            .collect();
 
-        println!("raw_contents = {:#?}", raw_contents);
+        // println!("raw_contents = {:#?}", raw_contents);
+
+        let display = raw_contents
+            .clone()
+            .into_iter()
+            .map(|mut x| {
+                if x.len() == 1 && x[0].ends_with(":") {
+                    x
+                } else {
+                    x.insert(0, "\t");
+                    x
+                }
+            })
+            .map(|x| x.join(" "))
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        println!("Assembly Input:\n\n{}", display);
+        
+        
+        
 
         // build return Vec<Instruction>
         let mut res: Vec<Instruction> = vec![];
@@ -242,9 +265,9 @@ impl Instruction {
             // label treat as an instruction
             if i.len() == 1 && i[0].ends_with(":") {
                 labels.push((i[0][..i[0].len()-1].to_owned(),0))
-            } else {
+            } // else {
                 res.push(Self::new_ins_from_raw_str(i))
-            }
+            // }
         }
         (res, labels)
     }
@@ -272,9 +295,11 @@ fn main() {
         // TODO: adjust the label offset , maybe 1+ bytes
         ins.address = current_addr;
         current_addr += ins.ins_len;
-
+        
         // keep down label's address
         if let Some(s) = ins.label.as_deref() {
+            // println!("s = {:?}", s);
+            
             for i in 0..labels.len() {
                 if labels[i].0 == s {
                     labels[i].1 = ins.address;
@@ -283,12 +308,17 @@ fn main() {
         }
     }
 
+    println!("\nLabels Address = {:#?}\n", labels);
+    
     // parse target address of push into binary
     for mut ins in &mut ins_arr {
         if ins.opcode == PUSH {
             for (k, v) in &labels {
                 if k.eq(ins.raw_param.as_deref().unwrap()) {
-                    ins.oprand = Some(vec![*v as u8]);
+                    // println!("---------------here------------------- v= {}", v);
+                    ins.opcode = Instruction::mnemonic_to_opcode("PUSH1");
+                    // ins.oprand = Some(vec![*v as u8]);
+                    ins.raw_param = Some(format!("0x{:02x}",*v));
                 }
             }
         }
@@ -298,7 +328,7 @@ fn main() {
     for mut ins in &mut ins_arr {
         if ins.opcode >= PUSH_START && ins.opcode <= PUSH_END {
             let param = ins.raw_param.as_deref().unwrap();
-            println!("param = {:?}", param);
+            // println!("param = {:?}", param);
 
             // TODO: now the code assumes well-formatted number
             
@@ -311,7 +341,7 @@ fn main() {
                 } else {
                     sum = usize::from_str_radix(param,10).expect("err oprand");
                 }
-                target.insert(0, sum as u8);
+                target.push(sum as u8);
             }
             ins.oprand = Some(target);
         }
@@ -320,6 +350,9 @@ fn main() {
 
     let mut final_arr = vec![];
     for ins in &ins_arr {
+        if ins.label.is_some() {
+            continue
+        }
         final_arr.push(ins.opcode);
         if let Some(v) = ins.oprand.as_ref() {
             for e in v {
@@ -328,8 +361,14 @@ fn main() {
         }
     }
 
-    println!("final_arr = {:?}", final_arr);
-    
+    let mut final_str = String::from("0x");
+
+    for i in final_arr {
+        final_str.push_str(format!("{:02x}", i).as_str())
+    }
+
+    println!("Bytecode Output:\n\n{}\n", final_str);
+    // println!("{}",format!("{:02X}",0));
 }
 
 #[cfg(test)]
@@ -337,7 +376,7 @@ mod tests {
     // use super::*;
     #[test]
     fn test_is_valid_ip() {
-        
-        assert_eq!(usize::from_str_radix("123",16).unwrap(), 0x123);
+        println!("{}", format!("1{:x}", 0));
+        // assert_eq!(usize::from_str_radix("123",16).unwrap(), 0x123);
     }
 }
