@@ -1,0 +1,54 @@
+	caller 	// 33:0
+	push20 0x9B3754c0a0798aDe51e98c7a81aE73aAcf9C2e5F // 739B3754c0a0798aDe51e98c7a81aE73aAcf9C2e5F:1
+	xor		// 18:22
+	push __get_price__	// 6048:23
+	jumpi	// 57:25
+	
+	push4 0xa6f2ae3a	; buy()	// 63a6f2ae3a:26
+	push1 0		// 6000:2b
+	mstore		// 52:2d
+	push1 0		; retLength		// 6000:2e
+	push1 0		; retOffset		// 6000:30
+	push1 4		; argsLength	// 6004:32
+	push1 0x1c	; argsOffset	// 601c:34
+	push1 0		; value			// 6000:36
+	push20 0xa0379c92AE6533b4C3f82606852E6ACc416DCc3A		; addr // 73a0379c92AE6533b4C3f82606852E6ACc416DCc3A:38
+	gas			; gas	// 5a:59
+	call				// f1:5a
+	push1 0				// 6000:5c
+	push1 0				// 6000:5e
+	return				// f3:60
+
+__get_price__:
+	jumpdest	// 5b:61
+	push4 0xe852e741	; price()	// 63e852e741:62
+	push1 0		// 6000:67
+	mstore		// 52:69
+	push1 0x20	; retLength	// 6020:6a
+	push1 0		; retOffset	// 6000:6c
+	push1 4		; argsLength// 6004:6e
+	push1 0x1c	; argsOffset// 601c:70
+	push1 0		; value	// 6000:72
+	caller		; addr	// 33:74
+	gas			; gas	// 5a:75
+	call				// f1:76
+	push1 0				// 6000:77
+	mload				// 51:79
+	push __sold__		// 606e:7a
+	jumpi				// 57:7c
+	
+	push1 0x64	// 6064	:7d
+	push1 0		// 6000:7f
+	mstore		// 52:81
+	push1 0x20	// 6020:82
+	push1 0		// 6000:84
+	return		// f3:86
+	
+__sold__:
+	jumpdest	// 5b:87
+	push1 0x63	// 6063
+	push1 0		// 6000
+	mstore		// 52
+	push1 0x20	// 6020
+	push1 0		// 6000
+	return		// f3
