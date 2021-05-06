@@ -2,22 +2,22 @@
 
 An EVM assembly to bytecode converter.
 
-This project is built for fun and my own convenient.
+This project is built for practice and my own convenient.
 
-I' ll appreciate it very much if someone tell me some better and easy to use alternatives.
+I' ll appreciate it very much if someone can tell me some better and easy to use alternatives.
 
 ## Usage
 
 you only need `cargo` to build it.
 
 ```plain
-<binary> <asm-file>
+cargo r <asm-file>
 ```
 
 or
 
 ```plain
-cargo r <asm-file>
+<binary> <asm-file>
 ```
 
 ## Example output
