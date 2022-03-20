@@ -1,0 +1,48 @@
+    gas
+    push3 0x01869e
+    calldatasize
+    push1 0
+    lt
+    push __attack__
+    jumpi
+    eq
+    push __1__
+    jumpi
+    push1 2
+    push __return__
+    jump
+__1__:
+    jumpdest
+    push1 1
+    push __return__
+    jump
+__return__:
+    jumpdest
+    push1 0
+    mstore
+    push1 0x20
+    push1 0
+    return
+
+__attack__:
+    jumpdest
+    push1 0
+    push4 0x890d6908
+    dup2
+    mstore
+    dup1
+    push1 4
+    push1 28
+    dup3
+    push20  0x066036e1F2C49EC994b9D2797932fED48230Ce2f
+    push3 0x019258
+    call
+    push1 1
+    eq
+    push __graceful__
+    jumpi
+    revert
+__graceful__:
+    jumpdest
+    stop
+
